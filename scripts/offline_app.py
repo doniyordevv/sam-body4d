@@ -280,7 +280,7 @@ class OfflineApp:
             idx_path = {}
             occ_dict = {}
             if len(modal_pixels_list) > 0:
-                print("detect occlusions ...")
+                #print("detect occlusions ...")
                 pred_amodal_masks_dict = {}
                 for (modal_pixels, obj_id) in zip(modal_pixels_list, self.RUNTIME['out_obj_ids']):
                     # detect occlusions for each object
@@ -379,7 +379,7 @@ class OfflineApp:
                         os.makedirs(completion_masks_path, exist_ok=True)
                         idx_path[obj_id] = {'images': completion_image_path, 'masks': completion_masks_path}
                         # save completion masks
-                        for idx_ in range(start, end):
+                        for idx_ in range(start, end + 1):
                             mask_idx_ = pred_amodal_masks[idx_].copy()
                             mask_idx_[mask_idx_ > 0] = obj_id
                             mask_idx_ = Image.fromarray(mask_idx_).convert('P')
@@ -393,8 +393,8 @@ class OfflineApp:
                     modal_pixels_current, ori_shape = load_and_transform_masks(self.OUTPUT_DIR + "/masks", resolution=pred_res_hi, obj_id=obj_id)
                     rgb_pixels_current, _, raw_rgb_pixels_current = load_and_transform_rgbs(self.OUTPUT_DIR + "/images", resolution=pred_res_hi)
                     modal_pixels_current = modal_pixels_current[:, i:i + batch_size, :, :, :]
-                    modal_pixels_current = modal_pixels_current[:, start:end]
-                    pred_amodal_masks_current = pred_amodal_masks_dict[obj_id][start:end]
+                    modal_pixels_current = modal_pixels_current[:, start:end+1]
+                    pred_amodal_masks_current = pred_amodal_masks_dict[obj_id][start:end+1]
                     modal_mask_union = (modal_pixels_current[0, :, 0, :, :].cpu().numpy() > 0).astype('uint8')
                     pred_amodal_masks_current = np.logical_or(pred_amodal_masks_current, modal_mask_union).astype('uint8')
                     pred_amodal_masks_tensor = torch.from_numpy(np.where(pred_amodal_masks_current == 0, -1, 1)).float().unsqueeze(0).unsqueeze(
@@ -407,7 +407,7 @@ class OfflineApp:
                     modal_rgb_pixels = rgb_pixels_current * modal_obj_mask + modal_background
                     modal_rgb_pixels = modal_rgb_pixels * 2 - 1
 
-                    print("content completion by diffusion-vas ...")
+                    #print("content completion by diffusion-vas ...")
                     # predict amodal rgb (content completion)
                     pred_amodal_rgb = self.pipeline_rgb(
                         modal_rgb_pixels,

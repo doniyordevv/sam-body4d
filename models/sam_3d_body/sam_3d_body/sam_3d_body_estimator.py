@@ -247,7 +247,7 @@ class SAM3DBodyEstimator:
                 cam_int = cam_int.to(batch["img"])
                 batch["cam_int"] = cam_int.clone()
             elif self.fov_estimator is not None:
-                print("Running FOV estimator ...")
+                # print("Running FOV estimator ...")
                 # input_image = batch["img_ori"][0].data
                 if _occ_image_batch_ori is not None:
                     input_image = np.array(Image.open(_occ_image_batch_ori[i])).astype('uint8')
