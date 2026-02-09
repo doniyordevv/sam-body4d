@@ -14,7 +14,6 @@ visualizer.set_pose_meta(mhr70_pose_info)
 
 def visualize_sample(img_cv2, outputs, faces, id_current):
 	img_mesh = img_cv2.copy()
-	img_mesh = np.ones_like(img_mesh) * 255
 
 	if outputs is None:
 		return img_mesh
@@ -28,7 +27,7 @@ def visualize_sample(img_cv2, outputs, faces, id_current):
 				person_output["pred_cam_t"],
 				img_mesh.copy(),
 				mesh_base_color=color_list[id_current[pid]+4],
-				scene_bg_color=(1, 1, 1),
+				scene_bg_color=(0, 0, 0),
 			)
 			* 255
 		)
@@ -41,7 +40,6 @@ def visualize_sample(img_cv2, outputs, faces, id_current):
 def visualize_sample_together(img_cv2, outputs, faces, id_current):
 	# Render everything together
 	img_mesh = img_cv2.copy()
-	img_mesh = np.ones_like(img_mesh) * 255
 
 	if outputs is None:
 		return img_mesh
@@ -79,7 +77,7 @@ def visualize_sample_together(img_cv2, outputs, faces, id_current):
 			img_mesh,
 			# mesh_base_color=LIGHT_BLUE,
 			mesh_base_color=all_color,
-			scene_bg_color=(1, 1, 1),
+			scene_bg_color=(0, 0, 0),
 		)
 		* 255
 	)
