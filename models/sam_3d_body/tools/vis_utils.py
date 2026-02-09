@@ -32,10 +32,25 @@ def visualize_sample(img_cv2, outputs, faces, id_current):
 			* 255
 		)
 
+		# Draw skeleton on top of rendered mesh
+		img2 = _draw_skeletons(img2, [person_output])
+
 		# cur_img = np.concatenate([img_cv2, img1, img2, img3], axis=1)
 		rend_img.append(img2)
 
 	return rend_img
+
+def _draw_skeletons(image, outputs):
+	"""Draw 2D skeleton overlay for all persons onto the image."""
+	for person_output in outputs:
+		kpts_2d = person_output.get("pred_keypoints_2d")
+		if kpts_2d is None:
+			continue
+		# draw_skeleton expects (B, N, 3) where last col is confidence
+		conf = np.ones((kpts_2d.shape[0], 1), dtype=kpts_2d.dtype)
+		kpts_with_conf = np.concatenate([kpts_2d, conf], axis=-1)[None]  # (1, 70, 3)
+		image = visualizer.draw_skeleton(image, kpts_with_conf, kpt_thr=0.0)
+	return image
 
 def visualize_sample_together(img_cv2, outputs, faces, id_current):
 	# Render everything together
@@ -81,5 +96,8 @@ def visualize_sample_together(img_cv2, outputs, faces, id_current):
 		)
 		* 255
 	)
+
+	# Draw skeletons on top of rendered meshes
+	img_mesh = _draw_skeletons(img_mesh, outputs)
 
 	return img_mesh
